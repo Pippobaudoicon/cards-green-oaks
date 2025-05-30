@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🃏 Carte Italiane - Gioco Online</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen active">
+            <div class="welcome-container">
+                <h1>🃏 Carte Italiane</h1>
+                <p class="subtitle">Gioco di carte online in tempo reale</p>
+                
+                <!-- Session Status -->
+                <div id="session-indicator" class="session-indicator" style="display: none;">
+                    <div class="session-info">
+                        <span class="session-icon">💾</span>
+                        <span class="session-text">Sessione salvata trovata</span>
+                    </div>
+                    <button id="clear-session-btn" class="btn btn-small btn-secondary">
+                        Cancella Sessione
+                    </button>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="create-room-btn" class="btn btn-primary">
+                        <span class="btn-icon">➕</span>
+                        Crea Stanza
+                    </button>
+                    <button id="join-room-btn" class="btn btn-secondary">
+                        <span class="btn-icon">🚪</span>
+                        Entra in Stanza
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Room Modal -->
+        <div id="create-room-modal" class="modal">
+            <div class="modal-content">
+                <h3>Crea Nuova Stanza</h3>
+                <form id="create-room-form">
+                    <div class="form-group">
+                        <label for="create-username">Il tuo nome:</label>
+                        <input type="text" id="create-username" placeholder="Inserisci il tuo nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="create-passcode">Codice stanza:</label>
+                        <input type="text" id="create-passcode" placeholder="Inserisci un codice (opzionale)">
+                        <small>Lascia vuoto per una stanza senza codice</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('create-room-modal')">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Crea Stanza</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Join Room Modal -->
+        <div id="join-room-modal" class="modal">
+            <div class="modal-content">
+                <h3>Entra in Stanza</h3>
+                <form id="join-room-form">
+                    <div class="form-group">
+                        <label for="join-username">Il tuo nome:</label>
+                        <input type="text" id="join-username" placeholder="Inserisci il tuo nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="join-room-id">ID Stanza:</label>
+                        <input type="text" id="join-room-id" placeholder="es. ABC123" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="join-passcode">Codice:</label>
+                        <input type="text" id="join-passcode" placeholder="Inserisci il codice (se richiesto)">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('join-room-modal')">Annulla</button>
+                        <button type="submit" class="btn btn-primary">Entra</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <header class="game-header">
+                <div class="room-info">
+                    <h2>Stanza: <span id="room-id-display"></span></h2>
+                    <div class="user-badge">
+                        <span id="username-display"></span>
+                        <span id="host-badge" class="host-indicator">👑 Host</span>
+                    </div>
+                </div>
+                <button id="leave-room-btn" class="btn btn-danger btn-small">Esci</button>
+            </header>
+
+            <div class="game-content">
+                <div class="left-panel">
+                    <!-- Deck and Actions -->
+                    <div class="deck-section">
+                        <div class="deck-container">
+                            <div class="deck-card">
+                                <div class="card-back">
+                                    <span class="deck-count" id="deck-count">40</span>
+                                    <div class="deck-label">Carte Rimaste</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button id="draw-card-btn" class="btn btn-primary btn-large">
+                                <span class="btn-icon">🃏</span>
+                                Pesca Carta
+                            </button>
+                            <button id="reshuffle-btn" class="btn btn-warning btn-large host-only">
+                                <span class="btn-icon">🔄</span>
+                                Rimescola
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Last Drawn Card -->
+                    <div id="last-card-section" class="last-card-section" style="display: none;">
+                        <h4>Ultima Carta Pescata</h4>
+                        <div id="last-card-display" class="card-display"></div>
+                    </div>
+                </div>
+
+                <div class="right-panel">
+                    <!-- Users List -->
+                    <div class="users-section">
+                        <h4>Giocatori Online (<span id="user-count">0</span>)</h4>
+                        <div id="users-list" class="users-list"></div>
+                    </div>
+
+                    <!-- History -->
+                    <div class="history-section">
+                        <h4>Cronologia</h4>
+                        <div id="history-list" class="history-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Connessione in corso...</p>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="modal">
+            <div class="modal-content">
+                <h3>❌ Errore</h3>
+                <p id="error-message"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('error-modal')">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="modal">
+            <div class="modal-content">
+                <h3>✅ Successo</h3>
+                <p id="success-message"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="closeModal('success-modal')">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

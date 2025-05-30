@@ -1,0 +1,21 @@
+{
+  "name": "italian-card-game",
+  "version": "1.0.0",
+  "description": "Real-time multiplayer Italian card game with 40 cards, room management, and host privileges",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "dev:auto": "powershell -ExecutionPolicy Bypass -File start.ps1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["cards", "game", "italian", "multiplayer", "realtime", "socket.io"],
+  "author": "Tommaso Lopiparo",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  }
+}
