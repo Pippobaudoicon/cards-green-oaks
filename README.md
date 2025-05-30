@@ -2,6 +2,12 @@
 
 Un'applicazione multiplayer in tempo reale per giocare con un mazzo di carte italiane tradizionale da 40 carte.
 
+## 🌐 Demo Live
+
+**Prova subito l'applicazione:** [cards.tommasolopiparo.com](https://cards.tommasolopiparo.com)
+
+Nessuna installazione richiesta! Apri il link, crea o entra in una stanza e inizia a giocare con i tuoi amici.
+
 ## ✨ Caratteristiche
 
 - **Multiplayer in tempo reale** con Socket.IO
